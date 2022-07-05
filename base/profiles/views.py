@@ -43,29 +43,30 @@ def update_profile_view(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
+        'profile' : request.user.donor_profile
     }
     return render(request, 'profile/update.html', context=context)
-
 
 @login_required
 def public_profile_view(request, id):
     get_user = get_object_or_404(User, id=id)
 
     profile = get_user.donor_profile
-    profile.hobbies = [hobby.strip() for hobby in profile.hobbies.split(',')]
+    if profile.hobbies:
+        profile.hobbies = [hobby.strip() for hobby in profile.hobbies.split(',')]
 
     context = {
         'user': get_user,
         'profile': profile
     }
-
     return render(request, 'profile/public_view.html', context=context)
 
 
 @login_required
 def self_profile_view(request):
     profile = request.user.donor_profile
-    profile.hobbies = [hobby.strip() for hobby in profile.hobbies.split(',')]
+    if profile.hobbies:
+        profile.hobbies = [hobby.strip() for hobby in profile.hobbies.split(',')]
 
     context = {
         'user': request.user,
@@ -110,19 +111,21 @@ def all_profile_view(request):
 
 @login_required
 def available(request):
-    if request.method == 'POST' and request.user.is_authenticated:
+    if request.user.is_authenticated:
         get_user = request.user
         profile = get_user.donor_profile
         profile.available = True
+        profile.save()
 
-    return render(request, 'profile/self_view.html')
+    return redirect('profile_update')
 
 @login_required
 def not_available(request):
-    if request.method == 'POST' and request.user.is_authenticated:
+    if request.user.is_authenticated:
         get_user = request.user
         profile = get_user.donor_profile
         profile.last_donated = datetime.utcnow()
         profile.available = False
+        profile.save()
 
-    return render(request, 'profile/self_view.html')
+    return redirect('profile_update')

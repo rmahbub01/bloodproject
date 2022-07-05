@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from profiles.views import all_profile_view
 
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),  # allauth
 
     # local
+    path("", all_profile_view, name="home"),
     path("m/", include("profiles.urls")),
 ]
 

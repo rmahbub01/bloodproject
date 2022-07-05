@@ -45,7 +45,7 @@ class Profile(models.Model):
     department = models.CharField(max_length=250, blank=True, null=True)
     
     last_donated = models.DateTimeField(auto_now_add=True)
-    avaiable = models.BooleanField(default=True)
+    available = models.BooleanField(default=True)
 
 class DonorProfile(Profile):
     user = models.OneToOneField(
@@ -81,13 +81,3 @@ class DonorProfile(Profile):
     def get_hobbies_as_list(self):
         return self.hobbies.split(",")
     
-    def is_available(self, *args, **kwargs):
-        now = datetime.now()
-        exp = self.last_donated + timedelta(days=90)
-
-        if exp>=now:
-            self.avaiable = True
-            return True
-        self.avaiable = False
-        return False
-        
